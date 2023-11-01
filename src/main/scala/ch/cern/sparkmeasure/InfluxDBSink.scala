@@ -58,17 +58,15 @@ class InfluxDBSink(conf: SparkConf) extends SparkListener {
     case _ => InfluxDBFactory.connect(url, username, password)
   }
 
+
+  val database = influxDB
   try {
     val dbName = Utils.parseInfluxDBName(conf, logger)
     if (!influxDB.databaseExists(dbName)) {
       influxDB.createDatabase(dbName)
     }
-    val database = influxDB.setDatabase(dbName)  
+    database = influxDB.setDatabase(dbName)  
     logger.info((s"using InfluxDB database $dbName"))
-  } 
-  catch {
-    logger.info((s"Failed to set InfluxDB database"))
-    val database = influxDB
   }
 
   val logStageMetrics = Utils.parseInfluxDBStagemetrics(conf, logger)
